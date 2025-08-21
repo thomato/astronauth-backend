@@ -1,0 +1,17 @@
+type Query {
+    echo(message: String!): EchoResponse!
+    ping: PingResponse
+}
+
+type EchoResponse {
+    original: String!
+    reversed: String!
+    length: Int!
+    timestamp: String!
+}
+
+type PingResponse {
+    status: String!
+    latency: Float!
+    timestamp: String!
+}
