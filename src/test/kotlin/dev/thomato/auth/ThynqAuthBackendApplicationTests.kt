@@ -8,6 +8,5 @@ import org.springframework.context.annotation.Import
 @SpringBootTest
 class ThynqAuthBackendApplicationTests {
     @Test
-    fun contextLoads() {
-    }
+    fun contextLoads() {}
 }
