@@ -8,7 +8,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig {
+class WebSecurityConfiguration {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests {
@@ -16,7 +16,7 @@ class WebSecurityConfig {
                 .anyRequest().authenticated()
         }
             .csrf { csrf ->
-                csrf.ignoringRequestMatchers("/graphql/**")  // Disable CSRF for GraphQL
+                csrf.ignoringRequestMatchers("/graphql/**") // Disable CSRF for GraphQL
             }
 
         return http.build()
