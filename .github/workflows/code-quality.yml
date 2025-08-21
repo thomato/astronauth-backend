@@ -1,9 +1,6 @@
 name: Code Quality
 
 on:
-  push:
-    branches:
-      - setup-github-actions
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -14,8 +11,8 @@ env:
   JAVA_VERSION: '21'
 
 jobs:
-  ktlint:
-    name: KtLint Check
+  code-quality:
+    name: KtLint & Detekt
     runs-on: ubuntu-latest
     
     steps:
@@ -33,12 +30,33 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run KtLint
+        id: ktlint
         run: ./gradlew ktlintCheck --no-daemon
+        continue-on-error: true
 
-      - name: Upload KtLint reports
-        if: failure()
+      - name: Run Detekt
+        id: detekt
+        run: ./gradlew detekt --no-daemon
+        continue-on-error: true
+
+      - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ktlint-reports
-          path: build/reports/ktlint/
+          name: code-quality-reports
+          path: |
+            build/reports/ktlint/
+            build/reports/detekt/
           retention-days: 7
+
+      - name: Check code quality results
+        if: always()
+        run: |
+          if [[ "${{ steps.ktlint.outcome }}" == "failure" || "${{ steps.detekt.outcome }}" == "failure" ]]; then
+            echo "Code quality checks failed!"
+            echo "KtLint result: ${{ steps.ktlint.outcome }}"
+            echo "Detekt result: ${{ steps.detekt.outcome }}"
+            exit 1
+          else
+            echo "All code quality checks passed!"
+          fi
