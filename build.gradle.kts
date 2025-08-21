@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.ktlint)
 }
 
 group = "dev.thomato"
@@ -72,4 +73,17 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// KtLint configuration
+ktlint {
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
+
+    filter {
+        exclude("**/generated/**")
+        exclude("**/build/**")
+    }
 }
