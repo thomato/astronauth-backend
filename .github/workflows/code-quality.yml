@@ -1,0 +1,44 @@
+name: Code Quality
+
+on:
+  push:
+    branches:
+      - setup-github-actions
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**.kt'
+      - '**.kts'
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  ktlint:
+    name: KtLint Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run KtLint
+        run: ./gradlew ktlintCheck --no-daemon
+
+      - name: Upload KtLint reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-reports
+          path: build/reports/ktlint/
+          retention-days: 7
