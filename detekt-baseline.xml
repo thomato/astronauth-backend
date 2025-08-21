@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>EmptyFunctionBlock:ThynqAuthBackendApplicationTests.kt$ThynqAuthBackendApplicationTests${}</ID>
+    <ID>SpreadOperator:ThynqAuthBackendApplication.kt$(*args)</ID>
+  </CurrentIssues>
+</SmellBaseline>

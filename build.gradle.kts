@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 group = "dev.thomato"
@@ -28,6 +29,9 @@ repositories {
 }
 
 dependencies {
+    // Detekt plugins
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
+
     // Use bundles for better organization
     implementation(libs.bundles.spring.boot.web)
     implementation(libs.bundles.spring.data)
@@ -86,4 +90,12 @@ ktlint {
         exclude("**/generated/**")
         exclude("**/build/**")
     }
+}
+
+// Detekt configuration
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$projectDir/detekt.yml")
+    ignoreFailures = true // Temporarily ignore failures to test
 }
