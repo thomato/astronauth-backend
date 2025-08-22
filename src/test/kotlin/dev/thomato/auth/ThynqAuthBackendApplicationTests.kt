@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Import
 @Import(TestcontainersConfiguration::class)
 @SpringBootTest
 class ThynqAuthBackendApplicationTests {
-
     @Test
-    fun contextLoads() {
-    }
-
+    fun contextLoads() {}
 }

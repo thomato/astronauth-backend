@@ -1,0 +1,162 @@
+name: Build and Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+# Add explicit permissions for the workflow
+permissions:
+  contents: read
+  checks: write    # Needed for test reporter to create check runs
+  actions: read    # Needed to read workflow/action metadata
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  all-tests:
+    name: Run All Tests (Unit + Integration)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U testuser; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Run all tests (unit + integration)
+        run: ./gradlew clean test --no-daemon --stacktrace --info
+        env:
+          # Spring Boot datasource configuration
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+          SPRING_DATASOURCE_USERNAME: testuser
+          SPRING_DATASOURCE_PASSWORD: testpass
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+
+          # R2DBC configuration (if using reactive)
+          SPRING_R2DBC_URL: r2dbc:postgresql://localhost:5432/testdb
+          SPRING_R2DBC_USERNAME: testuser
+          SPRING_R2DBC_PASSWORD: testpass
+
+          # JPA/Hibernate configuration
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+          SPRING_JPA_SHOW_SQL: false
+
+          # Test-specific configuration
+          SPRING_PROFILES_ACTIVE: test
+          TESTCONTAINERS_RYUK_DISABLED: true
+
+          # Database connection for tests (alternative naming)
+          DATABASE_URL: jdbc:postgresql://localhost:5432/testdb
+          DATABASE_USERNAME: testuser
+          DATABASE_PASSWORD: testpass
+
+      - name: Generate test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Results
+          path: 'build/test-results/test/*.xml'
+          reporter: java-junit
+          fail-on-error: false
+          # Add token explicitly for permissions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            build/test-results/test/*.xml
+            build/reports/tests/test/
+          retention-days: 7
+
+      - name: Publish test summary
+        if: always()
+        run: |
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f "build/test-results/test/TEST-*.xml" ]; then
+            echo "✅ Test results found" >> $GITHUB_STEP_SUMMARY
+            echo "Test reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  build-validation:
+    name: Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: ./gradlew clean build -x test --no-daemon --stacktrace
+
+      - name: Check build artifacts
+        run: |
+          echo "## Build Artifacts" >> $GITHUB_STEP_SUMMARY
+          if [ -f build/libs/*.war ]; then
+            echo "✅ WAR file generated successfully" >> $GITHUB_STEP_SUMMARY
+            ls -lh build/libs/*.war >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f build/libs/*.jar ]; then
+            echo "✅ JAR files found:" >> $GITHUB_STEP_SUMMARY
+            ls -lh build/libs/*.jar >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ ! -f build/libs/*.war ] && [ ! -f build/libs/*.jar ]; then
+            echo "⚠️ No build artifacts found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            build/libs/*.jar
+            build/libs/*.war
+          retention-days: 7
