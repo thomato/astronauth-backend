@@ -2,7 +2,7 @@ name: Build and Tests
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
 
 # Add explicit permissions for the workflow
 permissions:
