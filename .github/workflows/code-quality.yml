@@ -2,10 +2,7 @@ name: Code Quality
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - '**.kt'
-      - '**.kts'
+    types: [opened, synchronize, reopened, edited]
 
 env:
   JAVA_VERSION: '21'
