@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     // Detekt plugins
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.5")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 
     // Use bundles for better organization
     implementation(libs.bundles.spring.boot.web)
@@ -97,5 +97,4 @@ detekt {
     buildUponDefaultConfig = true
     allRules = false
     config.setFrom("$projectDir/detekt.yml")
-    ignoreFailures = true // Temporarily ignore failures to test
 }
