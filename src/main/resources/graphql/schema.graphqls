@@ -15,3 +15,15 @@ type PingResponse {
     latency: Float!
     timestamp: String!
 }
+
+# User Registration
+# Input types for user registration
+input RegisterUserInput {
+    email: String!
+    password: String!
+    confirmPassword: String!
+}
+
+type Mutation {
+    registerUser(input: RegisterUserInput!): String!
+}

@@ -1,12 +1,19 @@
 package dev.thomato.auth
 
+import dev.thomato.auth.user.UserRepository
+import dev.thomato.auth.user.registration.RegisterUserInput
+import dev.thomato.auth.user.registration.UserRegistrationController
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -19,6 +26,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class GraphQLIntegrationTests {
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+    @Autowired
+    private lateinit var controller: UserRegistrationController
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @Test
     fun `echo query via HTTP should return correct response`() {
@@ -228,4 +241,34 @@ class GraphQLIntegrationTests {
             .andExpect(jsonPath("$.data.__type.fields[?(@.name == 'length')]").exists())
             .andExpect(jsonPath("$.data.__type.fields[?(@.name == 'timestamp')]").exists())
     }
+
+    @Test
+    fun `should register user with valid input`() =
+        runBlocking {
+            // Arrange
+            val input =
+                RegisterUserInput(
+                    email = "user@example.com",
+                    password = "SecurePass123!",
+                    confirmPassword = "SecurePass123!",
+                )
+
+            // Act
+            val result = controller.registerUser(input)
+
+            // Assert
+            // Verify user exists in database with correct email
+            val savedUser = userRepository.findAll().toList().find { it.email == "user@example.com" }
+            assert(savedUser != null) { "User should exist in database" }
+            assert(savedUser!!.email == "user@example.com") { "Email should match" }
+
+            // Verify password is hashed (not plaintext)
+            val passwordEncoder = BCryptPasswordEncoder()
+            assert(passwordEncoder.matches("SecurePass123!", savedUser.password))
+            assert(savedUser.password != "SecurePass123!") { "Password should not be stored as plaintext" }
+
+            // Verify success message contains the user ID
+            assert(result.startsWith("User registered successfully with ID:"))
+            assert(result.contains(savedUser.id.toString())) { "Result should contain the actual user ID" }
+        }
 }
