@@ -1,6 +1,31 @@
 # Astronauth
 This project uses **Spring Boot** and **Kotlin**.
 
+## Pre-commit Setup
+This project uses pre-commit hooks to ensure code quality. To set up:
+
+1. Install pre-commit: `pip3 install pre-commit`
+2. Install hooks: `pre-commit install`
+
+The hooks will automatically run:
+- **ktlint** for Kotlin formatting and style checks
+- **detekt** for static code analysis  
+- **tests** to ensure all tests pass
+
+### Docker Configuration for Tests
+Tests use testcontainers and require Docker to be running. Configuration depends on your Docker setup:
+
+**For Docker Desktop users:** No additional configuration needed.
+
+**For Lima Docker users:** Set these environment variables in your shell:
+```bash
+export DOCKER_HOST=unix:///Users/$USER/.lima/docker/sock/docker.sock
+export TESTCONTAINERS_HOST_OVERRIDE=127.0.0.1
+export TESTCONTAINERS_RYUK_DISABLED=true
+```
+
+**For other Docker setups:** Configure `DOCKER_HOST` to point to your Docker daemon socket.
+
 ## Setup IntelliJ
 ### Running Docker externally
 If you run Docker externally (e.g. using Lima), you should add the following:
