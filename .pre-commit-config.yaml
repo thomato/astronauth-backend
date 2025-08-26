@@ -1,0 +1,27 @@
+repos:
+  # Kotlin linting and formatting
+  - repo: local
+    hooks:
+      # KtLint formatting check
+      - id: ktlint-check
+        name: ktlint check
+        entry: ./gradlew ktlintCheck
+        language: system
+        files: \.kt$
+        pass_filenames: false
+
+      # Detekt linting
+      - id: detekt
+        name: detekt
+        entry: ./gradlew detekt
+        language: system
+        files: \.kt$
+        pass_filenames: false
+
+      # Run tests
+      - id: gradle-test
+        name: gradle test
+        entry: ./gradlew test
+        language: system
+        files: \.(kt|kts|java|properties|yaml|yml)$
+        pass_filenames: false
