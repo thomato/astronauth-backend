@@ -3,8 +3,6 @@ package dev.thomato.auth
 import dev.thomato.auth.user.UserRepository
 import dev.thomato.auth.user.registration.RegisterUserInput
 import dev.thomato.auth.user.registration.UserRegistrationController
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
@@ -15,6 +13,8 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -42,11 +42,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Hello World"))
@@ -64,11 +60,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.ping.status").value("pong"))
@@ -88,11 +80,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Variable Test"))
@@ -109,11 +97,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.errors").exists())
@@ -129,11 +113,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.errors").exists())
@@ -147,11 +127,7 @@ class GraphQLIntegrationTests {
             { "query": "query { ping { status } }"
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(malformedJson),
-        )
+        performGraphQl(malformedJson)
             .andExpect(status().isBadRequest)
     }
 
@@ -164,11 +140,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo1.original").value("First"))
@@ -186,11 +158,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Operation Name Test"))
@@ -206,11 +174,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.__schema.types").isArray)
@@ -228,11 +192,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.__type.name").value("EchoResponse"))
@@ -243,32 +203,43 @@ class GraphQLIntegrationTests {
     }
 
     @Test
-    fun `should register user with valid input`() =
-        runBlocking {
-            // Arrange
-            val input =
-                RegisterUserInput(
-                    email = "user@example.com",
-                    password = "SecurePass123!",
-                    confirmPassword = "SecurePass123!",
-                )
+    fun `should register user with valid input`() {
+        // Arrange
+        val input =
+            RegisterUserInput(
+                email = "user@example.com",
+                password = "SecurePass123!",
+                confirmPassword = "SecurePass123!",
+            )
 
-            // Act
-            val result = controller.registerUser(input)
+        // Act
+        val result = controller.registerUser(input)
 
-            // Assert
-            // Verify user exists in database with correct email
-            val savedUser = userRepository.findAll().toList().find { it.email == "user@example.com" }
-            assert(savedUser != null) { "User should exist in database" }
-            assert(savedUser!!.email == "user@example.com") { "Email should match" }
+        // Assert
+        // Verify user exists in database with correct email
+        val savedUser = userRepository.findAll().find { it.email == "user@example.com" }
+        assert(savedUser != null) { "User should exist in database" }
+        assert(savedUser!!.email == "user@example.com") { "Email should match" }
 
-            // Verify password is hashed (not plaintext)
-            val passwordEncoder = BCryptPasswordEncoder()
-            assert(passwordEncoder.matches("SecurePass123!", savedUser.password))
-            assert(savedUser.password != "SecurePass123!") { "Password should not be stored as plaintext" }
+        // Verify password is hashed (not plaintext)
+        val passwordEncoder = BCryptPasswordEncoder()
+        assert(passwordEncoder.matches("SecurePass123!", savedUser.password))
+        assert(savedUser.password != "SecurePass123!") { "Password should not be stored as plaintext" }
 
-            // Verify success message contains the user ID
-            assert(result.startsWith("User registered successfully with ID:"))
-            assert(result.contains(savedUser.id.toString())) { "Result should contain the actual user ID" }
-        }
+        // Verify success message contains the user ID
+        assert(result.startsWith("User registered successfully with ID:"))
+        assert(result.contains(savedUser.id.toString())) { "Result should contain the actual user ID" }
+    }
+
+    // GraphQL responses may complete asynchronously (e.g. on virtual threads); wait for them
+    private fun performGraphQl(body: String): ResultActions {
+        val result =
+            mockMvc.perform(
+                post("/graphql")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body),
+            )
+        val mvcResult = result.andReturn()
+        return if (mvcResult.request.isAsyncStarted) mockMvc.perform(asyncDispatch(mvcResult)) else result
+    }
 }

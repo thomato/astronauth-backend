@@ -14,7 +14,7 @@ class UserRegistrationController(
     private val passwordEncoder = BCryptPasswordEncoder()
 
     @MutationMapping
-    suspend fun registerUser(
+    fun registerUser(
         @Argument input: RegisterUserInput,
     ): String {
         require(input.password == input.confirmPassword) { "Password and confirm password must match" }

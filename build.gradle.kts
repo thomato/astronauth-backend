@@ -1,10 +1,8 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.spring)
-    war
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
-    alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
 }
@@ -39,7 +37,6 @@ dependencies {
     implementation(libs.bundles.spring.boot.web)
     implementation(libs.bundles.spring.data)
     implementation(libs.bundles.spring.security)
-    implementation(libs.bundles.reactive)
 
     // Additional individual dependencies
     implementation(libs.spring.boot.starter.graphql)
@@ -49,7 +46,6 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
     runtimeOnly(libs.postgresql)
-    runtimeOnly(libs.r2dbc.postgresql)
 
     // Development dependencies
     developmentOnly(libs.spring.boot.devtools)
@@ -57,9 +53,6 @@ dependencies {
 
     // Annotation processing
     annotationProcessor(libs.spring.boot.configuration.processor)
-
-    // WAR deployment
-    providedRuntime(libs.spring.boot.starter.tomcat)
 
     // Testing
     testImplementation(libs.bundles.testing)
@@ -70,12 +63,6 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
-}
-
-allOpen {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-    annotation("jakarta.persistence.Embeddable")
 }
 
 tasks.withType<Test> {
