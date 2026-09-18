@@ -28,6 +28,9 @@ repositories {
     mavenCentral()
 }
 
+// Docker 29 requires API >= 1.44; Testcontainers supports it from 1.21.4 on
+extra["testcontainers.version"] = libs.versions.testcontainers.get()
+
 dependencies {
     // Detekt plugins
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
