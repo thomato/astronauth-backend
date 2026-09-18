@@ -28,12 +28,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -54,12 +61,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.length").entity(Int::class.java).isEqualTo(0)
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(0)
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -80,12 +94,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -106,12 +127,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -129,13 +157,17 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("ping.status").entity(String::class.java).isEqualTo("pong")
-            .path("ping.latency").entity(Float::class.java).satisfies { latency ->
+            ).execute()
+            .path("ping.status")
+            .entity(String::class.java)
+            .isEqualTo("pong")
+            .path("ping.latency")
+            .entity(Float::class.java)
+            .satisfies { latency ->
                 assert(latency >= 0) { "Latency should be non-negative" }
-            }
-            .path("ping.timestamp").entity(String::class.java).satisfies { timestamp ->
+            }.path("ping.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -161,12 +193,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("ping.status").entity(String::class.java).isEqualTo("pong")
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("ping.status")
+            .entity(String::class.java)
+            .isEqualTo("pong")
     }
 
     @Test
@@ -188,12 +227,19 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("first.original").entity(String::class.java).isEqualTo(message1)
-            .path("first.length").entity(Int::class.java).isEqualTo(message1.length)
-            .path("second.original").entity(String::class.java).isEqualTo(message2)
-            .path("second.length").entity(Int::class.java).isEqualTo(message2.length)
+            ).execute()
+            .path("first.original")
+            .entity(String::class.java)
+            .isEqualTo(message1)
+            .path("first.length")
+            .entity(Int::class.java)
+            .isEqualTo(message1.length)
+            .path("second.original")
+            .entity(String::class.java)
+            .isEqualTo(message2)
+            .path("second.length")
+            .entity(Int::class.java)
+            .isEqualTo(message2.length)
     }
 
     @Test
@@ -216,12 +262,19 @@ class GraphQLTests {
                     timestamp
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 assert(timestamp.isNotEmpty()) { "Timestamp should not be empty" }
             }
     }
@@ -242,12 +295,17 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .variable("msg", testMessage)
+            ).variable("msg", testMessage)
             .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(testMessage.reversed())
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(testMessage.reversed())
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
     }
 
     @Test
@@ -264,11 +322,16 @@ class GraphQLTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(testMessage)
-            .path("echo.length").entity(Int::class.java).isEqualTo(testMessage.length)
-            .path("echo.reversed").pathDoesNotExist()
-            .path("echo.timestamp").pathDoesNotExist()
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(testMessage)
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(testMessage.length)
+            .path("echo.reversed")
+            .pathDoesNotExist()
+            .path("echo.timestamp")
+            .pathDoesNotExist()
     }
 }

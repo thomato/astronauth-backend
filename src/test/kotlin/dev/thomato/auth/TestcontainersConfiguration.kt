@@ -12,9 +12,8 @@ import java.time.Duration
 class TestcontainersConfiguration {
     @Bean
     @ServiceConnection
-    fun postgresContainer(): PostgreSQLContainer<*> {
-        return PostgreSQLContainer(DockerImageName.parse("postgres:latest"))
+    fun postgresContainer(): PostgreSQLContainer<*> =
+        PostgreSQLContainer(DockerImageName.parse("postgres:latest"))
             .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)))
             .withStartupAttempts(3)
-    }
 }

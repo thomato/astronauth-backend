@@ -12,7 +12,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -31,7 +31,7 @@ extra["testcontainers.version"] = libs.versions.testcontainers.get()
 
 dependencies {
     // Detekt plugins
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 
     // Use bundles for better organization
     implementation(libs.bundles.spring.boot.web)
@@ -71,6 +71,8 @@ tasks.withType<Test> {
 
 // KtLint configuration
 ktlint {
+    version.set("1.8.0")
+
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
@@ -87,4 +89,23 @@ detekt {
     buildUponDefaultConfig = true
     allRules = false
     config.setFrom("$projectDir/detekt.yml")
+}
+
+// ktlint and detekt embed their own Kotlin compiler and break when it is aligned with the project's newer Kotlin
+val lintKotlinVersions = mapOf("ktlint" to "2.2.21", "detekt" to "2.0.21")
+configurations.matching { it.name in lintKotlinVersions }.configureEach {
+    val kotlinVersion = lintKotlinVersions.getValue(name)
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion(kotlinVersion)
+        }
+    }
+}
+
+// detekt 1.23 cannot resolve types for JVM targets above 22
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "22"
+}
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "22"
 }

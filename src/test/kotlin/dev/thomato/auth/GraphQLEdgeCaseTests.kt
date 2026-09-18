@@ -30,11 +30,16 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(longString)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(longString)
-            .path("echo.length").entity(Int::class.java).isEqualTo(1000)
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(longString)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(longString)
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo(1000)
     }
 
     @Test
@@ -52,10 +57,13 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo("Line 1\nLine 2\tTabbed\rCarriage Return")
-            .path("echo.length").entity(Int::class.java).isEqualTo("Line 1\nLine 2\tTabbed\rCarriage Return".length)
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo("Line 1\nLine 2\tTabbed\rCarriage Return")
+            .path("echo.length")
+            .entity(Int::class.java)
+            .isEqualTo("Line 1\nLine 2\tTabbed\rCarriage Return".length)
     }
 
     @Test
@@ -73,10 +81,13 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.original").entity(String::class.java).isEqualTo(quotedString)
-            .path("echo.reversed").entity(String::class.java).isEqualTo(quotedString.reversed())
+            ).execute()
+            .path("echo.original")
+            .entity(String::class.java)
+            .isEqualTo(quotedString)
+            .path("echo.reversed")
+            .entity(String::class.java)
+            .isEqualTo(quotedString.reversed())
     }
 
     @Test
@@ -93,14 +104,16 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo.timestamp").entity(String::class.java).satisfies { timestamp ->
+            ).execute()
+            .path("echo.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 val instant = Instant.parse(timestamp)
                 assert(instant.isBefore(Instant.now().plusSeconds(1))) { "Timestamp should be recent" }
                 assert(instant.isAfter(Instant.now().minusSeconds(5))) { "Timestamp should be very recent" }
-            }
-            .path("ping.timestamp").entity(String::class.java).satisfies { timestamp ->
+            }.path("ping.timestamp")
+            .entity(String::class.java)
+            .satisfies { timestamp ->
                 Instant.parse(timestamp) // Should not throw exception
             }
     }
@@ -116,9 +129,10 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("ping.latency").entity(Float::class.java).satisfies { latency ->
+            ).execute()
+            .path("ping.latency")
+            .entity(Float::class.java)
+            .satisfies { latency ->
                 assert(latency >= 0.0f) { "Latency should be non-negative" }
                 assert(latency < 1.0f) { "Latency should be less than 1 second for local processing" }
             }
@@ -138,22 +152,24 @@ class GraphQLEdgeCaseTests {
                         }
                     }
                 """,
-                )
-                .execute()
-                .path("echo.length").entity(Int::class.java).isEqualTo(10000)
+                ).execute()
+                .path("echo.length")
+                .entity(Int::class.java)
+                .isEqualTo(10000)
         }
     }
 
     @Test
     fun `concurrent queries should work`() {
         val queries =
-            (1..5).map { i ->
-                """
+            (1..5)
+                .map { i ->
+                    """
                 alias$i: echo(message: "Message $i") {
                     original
                 }
             """
-            }.joinToString("\n")
+                }.joinToString("\n")
 
         graphQlTester
             .document(
@@ -162,8 +178,7 @@ class GraphQLEdgeCaseTests {
                     $queries
                 }
             """,
-            )
-            .execute()
+            ).execute()
             .apply {
                 (1..5).forEach { i ->
                     path("alias$i.original").entity(String::class.java).isEqualTo("Message $i")
@@ -190,9 +205,10 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .execute()
-            .path("echo").entity(Map::class.java).satisfies { echoMap ->
+            ).execute()
+            .path("echo")
+            .entity(Map::class.java)
+            .satisfies { echoMap ->
                 assert(echoMap.size == 4) { "Should have exactly 4 fields" }
                 assert(echoMap.containsKey("original"))
                 assert(echoMap.containsKey("reversed"))
@@ -212,8 +228,7 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .variable("msg", null)
+            ).variable("msg", null)
             .execute()
             .errors()
             .satisfy { errors ->
@@ -232,8 +247,7 @@ class GraphQLEdgeCaseTests {
                     }
                 }
             """,
-            )
-            .variable("msg", 123) // Number instead of String
+            ).variable("msg", 123) // Number instead of String
             .execute()
             .errors()
             .satisfy { errors ->

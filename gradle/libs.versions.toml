@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.10"
+kotlin = "2.4.20"
 spring-boot = "3.5.4"
 spring-dependency-management = "1.1.7"
 testcontainers = "1.21.4"
@@ -7,8 +7,8 @@ jackson = "2.18.2"
 flyway = "11.1.0"
 postgresql = "42.7.5"
 spring-session = "3.4.0"
-detekt = "1.23.7"
-ktlint = "12.1.0"
+detekt = "1.23.8"
+ktlint = "14.2.0"
 
 [libraries]
 # Spring Boot Starters
