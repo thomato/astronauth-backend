@@ -13,7 +13,7 @@ account/
 
 - **Dependencies point inward:** adapters → use case → domain. The domain and use cases have no Spring, persistence or GraphQL imports.
 - **Aggregates are shared, not owned by a slice.** An aggregate used by several features lives in the context's `domain/`, together with its outbound ports; the adapters implementing those ports live in shared packages such as `persistence/`.
-- **Outbound ports** are interfaces owned by the domain or a use case (e.g. the user repository, password hashing, sending email). **Outbound adapters** implement them (R2DBC, BCrypt, SMTP).
+- **Outbound ports** are interfaces owned by the domain or a use case (e.g. the user repository, password hashing, sending email). **Outbound adapters** implement them (Spring Data JDBC, Argon2, SMTP).
 - **Inbound adapters** (GraphQL now, REST later) live in their slice and are thin: they map transport input to the use case and map the result back. They contain no business rules.
 - Persistence entities are separate from domain objects and are mapped at the outbound adapter boundary.
 
