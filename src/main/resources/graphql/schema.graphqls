@@ -16,14 +16,17 @@ type PingResponse {
     timestamp: String!
 }
 
-# User Registration
-# Input types for user registration
-input RegisterUserInput {
-    email: String!
-    password: String!
-    confirmPassword: String!
+type Mutation {
+    requestRegistration(input: RequestRegistrationInput!): RequestRegistrationResult!
 }
 
-type Mutation {
-    registerUser(input: RegisterUserInput!): String!
+input RequestRegistrationInput {
+    email: String!
+    password: String!
+}
+
+union RequestRegistrationResult = RegistrationRequestAccepted
+
+type RegistrationRequestAccepted {
+    message: String!
 }

@@ -41,6 +41,7 @@ dependencies {
     // Additional individual dependencies
     implementation(libs.spring.boot.starter.graphql)
     implementation(libs.spring.boot.starter.mail)
+    implementation(libs.bouncycastle)
 
     // Database dependencies
     implementation(libs.flyway.database.postgresql)

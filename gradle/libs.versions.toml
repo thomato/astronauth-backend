@@ -4,6 +4,7 @@ spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
 detekt = "1.23.8"
 ktlint = "14.2.0"
+bouncycastle = "1.86"
 
 [libraries]
 # Spring Boot starters (versions managed by the Spring Boot BOM)
@@ -22,6 +23,9 @@ spring-boot-configuration-processor = { module = "org.springframework.boot:sprin
 
 # Jackson
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+
+# Password hashing (Argon2)
+bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 
 # Kotlin
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
