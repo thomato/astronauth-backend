@@ -11,6 +11,12 @@ The hooks will automatically run:
 - **ktlint** for Kotlin formatting and style checks
 - **detekt** for static code analysis  
 - **tests** to ensure all tests pass
+- **conventional-pre-commit** to check that commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+
+### Commit messages
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<optional scope>): <description>`, for example `feat(registration): reject duplicate emails`.
+
+Allowed types: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `build`, `ci`, `perf`. Flag breaking changes with a `BREAKING CHANGE:` footer.
 
 ### Docker Configuration for Tests
 Tests use testcontainers and require Docker to be running. Configuration depends on your Docker setup:

@@ -1,3 +1,4 @@
+default_install_hook_types: [pre-commit, commit-msg]
 repos:
   # Kotlin linting and formatting
   - repo: local
@@ -25,3 +26,10 @@ repos:
         language: system
         files: \.(kt|kts|java|properties|yaml|yml)$
         pass_filenames: false
+  # Commit message format
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [--strict, feat, fix, refactor, docs, style, test, chore, build, ci, perf]
