@@ -19,7 +19,7 @@ class UserRegistrationController(
     ): String {
         require(input.password == input.confirmPassword) { "Password and confirm password must match" }
 
-        val hashedPassword = passwordEncoder.encode(input.password)
+        val hashedPassword = checkNotNull(passwordEncoder.encode(input.password))
 
         val user =
             User(

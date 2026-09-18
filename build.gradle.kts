@@ -26,8 +26,8 @@ repositories {
     mavenCentral()
 }
 
-// Docker 29 requires API >= 1.44; Testcontainers supports it from 1.21.4 on
-extra["testcontainers.version"] = libs.versions.testcontainers.get()
+// Keep the Kotlin libraries on the compiler's version instead of the older one Spring Boot manages
+extra["kotlin.version"] = libs.versions.kotlin.get()
 
 dependencies {
     // Detekt plugins
@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.spring.boot.starter.mail)
 
     // Database dependencies
-    implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
     runtimeOnly(libs.postgresql)
 
