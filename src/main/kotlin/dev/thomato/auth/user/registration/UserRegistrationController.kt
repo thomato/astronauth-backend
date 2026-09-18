@@ -17,6 +17,8 @@ class UserRegistrationController(
     suspend fun registerUser(
         @Argument input: RegisterUserInput,
     ): String {
+        require(input.password == input.confirmPassword) { "Password and confirm password must match" }
+
         val hashedPassword = passwordEncoder.encode(input.password)
 
         val user =
