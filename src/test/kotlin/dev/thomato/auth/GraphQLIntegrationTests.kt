@@ -1,5 +1,7 @@
 package dev.thomato.auth
 
+import dev.thomato.auth.account.CSRF_TOKEN
+import jakarta.servlet.http.Cookie
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -196,6 +198,8 @@ class GraphQLIntegrationTests {
         val result =
             mockMvc.perform(
                 post("/graphql")
+                    .cookie(Cookie("XSRF-TOKEN", CSRF_TOKEN))
+                    .header("X-XSRF-TOKEN", CSRF_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body),
             )

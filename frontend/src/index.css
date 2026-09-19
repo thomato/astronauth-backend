@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+/* Semantic colour tokens, switched as a whole for dark mode, so components never pick raw colours. */
+:root {
+  --surface: #f6f7fb;
+  --card: #ffffff;
+  --ink: #111322;
+  --ink-muted: #5b6078;
+  --line: #d9dce8;
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --on-accent: #ffffff;
+  --danger: #b42318;
+  --danger-surface: #fef3f2;
+  --success: #067647;
+  --success-surface: #ecfdf3;
+  --focus: #6366f1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #0c0d16;
+    --card: #161826;
+    --ink: #eceef8;
+    --ink-muted: #a2a7c2;
+    --line: #2d3047;
+    --accent: #818cf8;
+    --accent-strong: #a5b4fc;
+    --on-accent: #0c0d16;
+    --danger: #fda29b;
+    --danger-surface: #2a1215;
+    --success: #75e0a7;
+    --success-surface: #0f2a1d;
+    --focus: #a5b4fc;
+  }
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-surface: var(--danger-surface);
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-focus: var(--focus);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  @apply bg-surface text-ink font-sans antialiased;
+}

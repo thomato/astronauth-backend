@@ -1,6 +1,17 @@
 # Astronauth
 This project uses **Spring Boot** and **Kotlin**.
 
+## Frontend
+Astronauth's own pages (Registration, Email verification) are a React SPA in `frontend/` (ADR 0004), built with Vite and Tailwind and bundled into the jar by Gradle, which downloads its own Node and pnpm. `./gradlew bootRun` serves them at http://localhost:8080/register with the `dev` profile (GraphiQL at `/graphiql`); verification emails land in Mailpit at http://localhost:8025.
+
+For fast frontend work, run `pnpm dev` in `frontend/` next to `./gradlew bootRun` and open http://localhost:5173/register; Vite proxies `/graphql` to Spring.
+
+- `pnpm test`: component tests (Vitest, Testing Library, MSW); also run by `./gradlew test`
+- `pnpm lint`: ESLint, Prettier and the type check; also run by `./gradlew check`
+- `pnpm e2e`: Playwright against the running application, from Registration through the emailed link to Email verification; starts `./gradlew bootRun` if nothing runs on port 8080
+
+TypeScript types for GraphQL operations are generated from `src/main/resources/graphql/schema.graphqls` (`pnpm codegen`, run by the scripts above). All wording lives in `frontend/src/copy/en.ts`; a translation is another file of the same `Copy` type.
+
 ## Pre-commit Setup
 This project uses pre-commit hooks to ensure code quality. To set up:
 
