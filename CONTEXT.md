@@ -19,7 +19,7 @@ A person's accepted but not yet processed wish to register with an email address
 _Avoid_: Sign-up, pending registration
 
 **Registration**:
-Processing a Registration request: either creating a new Account with its first Credential, or, when the email address already belongs to an Account, notifying that Account's owner instead.
+Processing a Registration request: creating a new Account and sending a Verification link, or, when the email address already belongs to an Account, notifying that Account's owner instead: with a new Verification link while the email is not yet a Verified email, with a notice once it is.
 _Avoid_: Sign-up, user creation
 
 **Verified email**:
@@ -27,8 +27,12 @@ The fact that a person has proven they control an Account's email address. It is
 _Avoid_: Active, confirmed account
 
 **Email verification**:
-Proving control of an Account's email address by following a single-use link sent to that address and proving the Credential from the Registration request that caused the link to be sent. Completing it makes that Credential the Account's only Credential.
+Proving control of an Account's email address by following a Verification link and proving the Credential it is bound to. Completing it makes that Credential the Account's only Credential and invalidates the Account's other Verification links.
 _Avoid_: Activation, confirmation
+
+**Verification link**:
+A single-use, expiring link sent to an Account's email address for one Registration request and bound to that request's Credential. An Account can have several at once; a new one never revokes older ones.
+_Avoid_: Activation link, confirmation link, verification token
 
 ### Operation
 
