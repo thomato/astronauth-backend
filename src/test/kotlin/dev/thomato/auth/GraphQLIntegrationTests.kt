@@ -3,11 +3,13 @@ package dev.thomato.auth
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -29,11 +31,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Hello World"))
@@ -51,11 +49,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.ping.status").value("pong"))
@@ -75,11 +69,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Variable Test"))
@@ -96,11 +86,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.errors").exists())
@@ -116,11 +102,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.errors").exists())
@@ -134,11 +116,7 @@ class GraphQLIntegrationTests {
             { "query": "query { ping { status } }"
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(malformedJson),
-        )
+        performGraphQl(malformedJson)
             .andExpect(status().isBadRequest)
     }
 
@@ -151,11 +129,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo1.original").value("First"))
@@ -173,11 +147,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.echo.original").value("Operation Name Test"))
@@ -193,11 +163,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.__schema.types").isArray)
@@ -215,11 +181,7 @@ class GraphQLIntegrationTests {
             }
             """.trimIndent()
 
-        mockMvc.perform(
-            post("/graphql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query),
-        )
+        performGraphQl(query)
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.data.__type.name").value("EchoResponse"))
@@ -227,5 +189,17 @@ class GraphQLIntegrationTests {
             .andExpect(jsonPath("$.data.__type.fields[?(@.name == 'reversed')]").exists())
             .andExpect(jsonPath("$.data.__type.fields[?(@.name == 'length')]").exists())
             .andExpect(jsonPath("$.data.__type.fields[?(@.name == 'timestamp')]").exists())
+    }
+
+    // GraphQL responses may complete asynchronously (e.g. on virtual threads); wait for them
+    private fun performGraphQl(body: String): ResultActions {
+        val result =
+            mockMvc.perform(
+                post("/graphql")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body),
+            )
+        val mvcResult = result.andReturn()
+        return if (mvcResult.request.isAsyncStarted) mockMvc.perform(asyncDispatch(mvcResult)) else result
     }
 }

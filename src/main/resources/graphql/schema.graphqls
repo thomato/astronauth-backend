@@ -15,3 +15,18 @@ type PingResponse {
     latency: Float!
     timestamp: String!
 }
+
+type Mutation {
+    requestRegistration(input: RequestRegistrationInput!): RequestRegistrationResult!
+}
+
+input RequestRegistrationInput {
+    email: String!
+    password: String!
+}
+
+union RequestRegistrationResult = RegistrationRequestAccepted
+
+type RegistrationRequestAccepted {
+    message: String!
+}
