@@ -13,7 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  JAVA_VERSION: '25'
+  # Gradle itself runs on 21 (gradle/gradle-daemon-jvm.properties, because detekt 1.23 breaks on 25); the code builds on 25
+  JAVA_VERSIONS: |
+    21
+    25
 
 jobs:
   lint:
@@ -25,7 +28,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.JAVA_VERSIONS }}
 
       - uses: gradle/actions/setup-gradle@v6
 
@@ -54,7 +57,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.JAVA_VERSIONS }}
 
       - uses: gradle/actions/setup-gradle@v6
 
@@ -87,7 +90,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.JAVA_VERSIONS }}
 
       - uses: gradle/actions/setup-gradle@v6
 
