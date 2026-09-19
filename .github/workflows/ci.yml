@@ -20,7 +20,7 @@ env:
 
 jobs:
   lint:
-    name: Lint (ktlint, detekt)
+    name: Lint (ktlint, detekt, frontend)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -32,8 +32,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Run ktlint and detekt
-        run: ./gradlew ktlintCheck detekt
+      # Gradle downloads Node and pnpm itself for the frontend (build.gradle.kts)
+      - name: Run ktlint, detekt and the frontend's ESLint, Prettier and tsc
+        run: ./gradlew ktlintCheck detekt frontendLint
 
       - name: Upload lint reports
         if: failure()
@@ -61,7 +62,8 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      # Integration tests start their own Postgres through Testcontainers, using the runner's Docker
+      # Integration tests start their own Postgres through Testcontainers, using the runner's Docker;
+      # the frontend's component tests run first, as part of the same task
       - name: Run tests
         run: ./gradlew test
 
