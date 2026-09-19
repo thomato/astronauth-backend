@@ -1,11 +1,10 @@
-package dev.thomato.auth.account.registration
+package dev.thomato.auth.account.application.registration
 
+import dev.thomato.auth.account.application.PasswordHasher
 import dev.thomato.auth.account.domain.EmailAddress
 import dev.thomato.auth.account.domain.Password
 import dev.thomato.auth.account.domain.PasswordCredential
-import dev.thomato.auth.account.domain.PasswordHasher
 import dev.thomato.auth.account.domain.RegistrationRequest
-import dev.thomato.auth.account.domain.RegistrationRequestQueue
 
 /**
  * Accepts a Registration request without ever looking up whether the email address belongs to an Account,

@@ -1,5 +1,6 @@
-package dev.thomato.auth.account.registration
+package dev.thomato.auth.account.api.graphql
 
+import dev.thomato.auth.account.application.registration.AcceptRegistrationRequest
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
 import org.springframework.stereotype.Controller

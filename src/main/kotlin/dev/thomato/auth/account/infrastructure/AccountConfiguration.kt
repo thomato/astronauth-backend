@@ -1,13 +1,13 @@
-package dev.thomato.auth.account
+package dev.thomato.auth.account.infrastructure
 
+import dev.thomato.auth.account.application.EmailSender
+import dev.thomato.auth.account.application.PasswordHasher
+import dev.thomato.auth.account.application.registration.AcceptRegistrationRequest
+import dev.thomato.auth.account.application.registration.Register
+import dev.thomato.auth.account.application.registration.RegistrationRequestQueue
 import dev.thomato.auth.account.domain.Accounts
-import dev.thomato.auth.account.domain.EmailSender
-import dev.thomato.auth.account.domain.PasswordHasher
-import dev.thomato.auth.account.domain.RegistrationRequestQueue
-import dev.thomato.auth.account.email.SmtpEmailSender
-import dev.thomato.auth.account.queue.ExecutorRegistrationRequestQueue
-import dev.thomato.auth.account.registration.AcceptRegistrationRequest
-import dev.thomato.auth.account.registration.Register
+import dev.thomato.auth.account.infrastructure.email.SmtpEmailSender
+import dev.thomato.auth.account.infrastructure.queue.ExecutorRegistrationRequestQueue
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

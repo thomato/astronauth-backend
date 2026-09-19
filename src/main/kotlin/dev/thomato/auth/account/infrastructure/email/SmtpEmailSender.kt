@@ -1,7 +1,7 @@
-package dev.thomato.auth.account.email
+package dev.thomato.auth.account.infrastructure.email
 
+import dev.thomato.auth.account.application.EmailSender
 import dev.thomato.auth.account.domain.EmailAddress
-import dev.thomato.auth.account.domain.EmailSender
 import dev.thomato.auth.account.domain.VerificationToken
 import org.springframework.mail.MailSender
 import org.springframework.mail.SimpleMailMessage

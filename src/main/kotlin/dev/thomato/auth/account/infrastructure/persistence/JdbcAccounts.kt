@@ -1,4 +1,4 @@
-package dev.thomato.auth.account.persistence
+package dev.thomato.auth.account.infrastructure.persistence
 
 import dev.thomato.auth.account.domain.Account
 import dev.thomato.auth.account.domain.Accounts

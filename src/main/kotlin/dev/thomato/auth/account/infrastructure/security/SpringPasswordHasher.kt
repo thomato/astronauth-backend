@@ -1,8 +1,8 @@
-package dev.thomato.auth.account.security
+package dev.thomato.auth.account.infrastructure.security
 
+import dev.thomato.auth.account.application.PasswordHasher
 import dev.thomato.auth.account.domain.Password
 import dev.thomato.auth.account.domain.PasswordHash
-import dev.thomato.auth.account.domain.PasswordHasher
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 import org.springframework.stereotype.Component

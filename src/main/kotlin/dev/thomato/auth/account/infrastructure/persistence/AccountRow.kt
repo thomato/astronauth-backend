@@ -1,4 +1,4 @@
-package dev.thomato.auth.account.persistence
+package dev.thomato.auth.account.infrastructure.persistence
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

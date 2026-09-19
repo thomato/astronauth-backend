@@ -1,7 +1,7 @@
 package dev.thomato.auth.account
 
+import dev.thomato.auth.account.application.EmailSender
 import dev.thomato.auth.account.domain.EmailAddress
-import dev.thomato.auth.account.domain.EmailSender
 import dev.thomato.auth.account.domain.VerificationToken
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean

@@ -1,8 +1,8 @@
-package dev.thomato.auth.account.queue
+package dev.thomato.auth.account.infrastructure.queue
 
+import dev.thomato.auth.account.application.registration.Register
+import dev.thomato.auth.account.application.registration.RegistrationRequestQueue
 import dev.thomato.auth.account.domain.RegistrationRequest
-import dev.thomato.auth.account.domain.RegistrationRequestQueue
-import dev.thomato.auth.account.registration.Register
 import org.slf4j.LoggerFactory
 import org.springframework.core.task.TaskExecutor
 
