@@ -7,29 +7,77 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import java.time.Duration
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
+import java.time.Instant
 
-/** Stands in for SMTP, the only unmanaged dependency; emails are sent off the request thread, so tests await them. */
+/**
+ * Stands in for SMTP, the only unmanaged dependency. Emails are sent off the request thread, so tests await
+ * them; tests share one application, so each awaits only emails to its own address.
+ */
 class RecordingEmailSender : EmailSender {
-    data class VerificationLinkEmail(
-        val to: EmailAddress,
-        val token: VerificationToken,
-    )
+    sealed interface Email {
+        val to: EmailAddress
+    }
 
-    private val verificationLinks = LinkedBlockingQueue<VerificationLinkEmail>()
+    data class VerificationLinkEmail(
+        override val to: EmailAddress,
+        val token: VerificationToken,
+    ) : Email
+
+    data class RegistrationNotice(
+        override val to: EmailAddress,
+    ) : Email
+
+    private val lock = Object()
+    private val unread = mutableListOf<Email>()
 
     override fun sendVerificationLink(
         to: EmailAddress,
         token: VerificationToken,
+    ) = record(VerificationLinkEmail(to, token))
+
+    override fun sendRegistrationNotice(to: EmailAddress) = record(RegistrationNotice(to))
+
+    private fun record(email: Email) =
+        synchronized(lock) {
+            unread += email
+            lock.notifyAll()
+        }
+
+    /** Returns the next unread email to the address, waiting for it to be sent. */
+    fun awaitEmail(
+        to: String,
+        timeout: Duration = Duration.ofSeconds(5),
+    ): Email = checkNotNull(nextEmail(EmailAddress(to), timeout)) { "No email was sent to $to within $timeout" }
+
+    fun awaitVerificationLink(to: String): VerificationLinkEmail =
+        awaitEmail(to).let { it as? VerificationLinkEmail ?: error("Expected a verification link but got $it") }
+
+    /** Waits long enough for background Registration to have sent anything it was going to send. */
+    fun assertNoEmail(
+        to: String,
+        wait: Duration = Duration.ofSeconds(1),
     ) {
-        verificationLinks.put(VerificationLinkEmail(to, token))
+        val email = nextEmail(EmailAddress(to), wait)
+        check(email == null) { "Expected no email to $to but got $email" }
     }
 
-    fun awaitVerificationLink(timeout: Duration = Duration.ofSeconds(5)): VerificationLinkEmail =
-        checkNotNull(verificationLinks.poll(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-            "No verification link was sent within $timeout"
+    private fun nextEmail(
+        to: EmailAddress,
+        timeout: Duration,
+    ): Email? {
+        val deadline = Instant.now() + timeout
+        synchronized(lock) {
+            while (true) {
+                unread.firstOrNull { it.to == to }?.let {
+                    unread.remove(it)
+                    return it
+                }
+                val remaining = Duration.between(Instant.now(), deadline).toMillis()
+                if (remaining <= 0) return null
+                lock.wait(remaining)
+            }
         }
+    }
 
     @TestConfiguration(proxyBeanMethods = false)
     class Configuration {
