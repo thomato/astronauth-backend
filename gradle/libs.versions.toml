@@ -5,6 +5,7 @@ spring-dependency-management = "1.1.7"
 detekt = "1.23.8"
 ktlint = "14.2.0"
 bouncycastle = "1.86"
+archunit = "1.5.0"
 
 [libraries]
 # Spring Boot starters (versions managed by the Spring Boot BOM)
@@ -44,6 +45,7 @@ spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-te
 testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 [bundles]
 spring-boot-web = [
@@ -72,7 +74,8 @@ testing = [
     "spring-boot-testcontainers",
     "kotlin-test-junit5",
     "testcontainers-junit-jupiter",
-    "testcontainers-postgresql"
+    "testcontainers-postgresql",
+    "archunit-junit5"
 ]
 
 [plugins]
