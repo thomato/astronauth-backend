@@ -44,7 +44,7 @@ fun HttpGraphQlTester.completeEmailVerification(
         mutation(${'$'}input: CompleteEmailVerificationInput!) {
             completeEmailVerification(input: ${'$'}input) {
                 __typename
-                ... on EmailVerified { email }
+                ... on EmailVerified { email continueTo }
                 ... on WrongCredential { attemptsLeft }
                 ... on VerificationLinkUnusable { status }
                 ... on VerificationThrottled { retryAfterSeconds }
@@ -53,3 +53,26 @@ fun HttpGraphQlTester.completeEmailVerification(
         """,
     ).variable("input", mapOf("token" to token, "password" to password))
         .execute()
+
+fun HttpGraphQlTester.signIn(
+    email: String,
+    password: String,
+): GraphQlTester.Response =
+    document(
+        """
+        mutation(${'$'}input: SignInInput!) {
+            signIn(input: ${'$'}input) {
+                __typename
+                ... on SignedIn { email continueTo }
+                ... on CredentialNotProven { proven }
+                ... on EmailNotVerified { email }
+                ... on SignInThrottled { retryAfterSeconds }
+            }
+        }
+        """,
+    ).variable("input", mapOf("email" to email, "password" to password))
+        .execute()
+
+fun HttpGraphQlTester.signOut(): GraphQlTester.Response = document("mutation { signOut }").execute()
+
+fun HttpGraphQlTester.me(): GraphQlTester.Response = document("query { me { email hasVerifiedEmail } }").execute()

@@ -42,6 +42,7 @@ export const CompleteEmailVerification = graphql(`
       __typename
       ... on EmailVerified {
         email
+        continueTo
       }
       ... on WrongCredential {
         attemptsLeft
@@ -52,6 +53,39 @@ export const CompleteEmailVerification = graphql(`
       ... on VerificationThrottled {
         retryAfterSeconds
       }
+    }
+  }
+`);
+
+export const SignIn = graphql(`
+  mutation SignIn($input: SignInInput!) {
+    signIn(input: $input) {
+      __typename
+      ... on SignedIn {
+        email
+        continueTo
+      }
+      ... on EmailNotVerified {
+        email
+      }
+      ... on SignInThrottled {
+        retryAfterSeconds
+      }
+    }
+  }
+`);
+
+export const SignOut = graphql(`
+  mutation SignOut {
+    signOut
+  }
+`);
+
+export const Me = graphql(`
+  query Me {
+    me {
+      email
+      hasVerifiedEmail
     }
   }
 `);

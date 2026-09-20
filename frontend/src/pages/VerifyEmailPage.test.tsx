@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { graphql, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
-import { renderAt } from '../test/render';
+import { describe, expect, it, vi } from 'vitest';
+import { renderAt, stubNavigation } from '../test/render';
 import { server } from '../test/server';
 
 function linkIs(status: string, email: string | null = 'ada@example.com') {
@@ -34,14 +34,15 @@ describe('Email verification', () => {
     expect(window.location.search).toBe('');
   });
 
-  it('verifies the address with the password from Registration', async () => {
+  it('verifies the address and signs the person in, landing where the server says (ADR 0006)', async () => {
     linkIs('USABLE');
-    verificationAnswers({ __typename: 'EmailVerified', email: 'ada@example.com' });
+    verificationAnswers({ __typename: 'EmailVerified', email: 'ada@example.com', continueTo: '/account' });
+    const assign = stubNavigation();
     const { user } = renderAt('/verify-email?token=secret-token');
 
     await enterPassword(user, 'correct horse battery');
 
-    expect(await screen.findByRole('heading', { name: 'Your email address is verified' })).toHaveFocus();
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledWith('/account'));
   });
 
   it('says how many attempts are left after a wrong password', async () => {

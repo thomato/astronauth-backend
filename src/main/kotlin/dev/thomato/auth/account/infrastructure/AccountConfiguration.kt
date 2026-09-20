@@ -14,7 +14,6 @@ import dev.thomato.auth.account.domain.Accounts
 import dev.thomato.auth.account.domain.VerificationLinks
 import dev.thomato.auth.account.infrastructure.email.SmtpEmailSender
 import dev.thomato.auth.account.infrastructure.queue.ExecutorRegistrationRequestQueue
-import dev.thomato.auth.account.infrastructure.ratelimit.InMemoryRateLimit
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -94,6 +93,4 @@ class AccountConfiguration {
         verificationClientLimit,
         clock,
     )
-
-    private fun LimitProperties.Limit.toRateLimit(clock: Clock) = InMemoryRateLimit(max, window, clock)
 }

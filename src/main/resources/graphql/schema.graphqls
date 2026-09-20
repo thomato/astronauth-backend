@@ -3,6 +3,17 @@ type Query {
     ping: PingResponse
     "Whether a Verification link can still be used, so the page can say so before asking for a password."
     verificationLink(token: String!): VerificationLinkLookup!
+    """
+    The Account whose Session is making this request; null when nobody is signed in. Named by GraphQL
+    convention: it means the signed-in Account, never a "user", which CONTEXT.md deliberately avoids.
+    """
+    me: SignedInAccount
+}
+
+type SignedInAccount {
+    email: String!
+    "False only under the OPTIONAL Verification policy, where an unverified Account may still sign in."
+    hasVerifiedEmail: Boolean!
 }
 
 type EchoResponse {
@@ -21,6 +32,39 @@ type PingResponse {
 type Mutation {
     requestRegistration(input: RequestRegistrationInput!): RequestRegistrationResult!
     completeEmailVerification(input: CompleteEmailVerificationInput!): CompleteEmailVerificationResult!
+    signIn(input: SignInInput!): SignInResult!
+    "Ends the Session making this request, and only that one. Always true; failing to be signed in is not an error."
+    signOut: Boolean!
+}
+
+input SignInInput {
+    email: String!
+    password: String!
+}
+
+"Never reveals whether the email address belongs to an Account (ADR 0003)."
+union SignInResult = SignedIn | CredentialNotProven | EmailNotVerified | SignInThrottled
+
+type SignedIn {
+    email: String!
+    "Where to go now: the page that was asked for before signing in, or the Account page."
+    continueTo: String!
+}
+
+"What a wrong password and an address with no Account both return, at the same cost."
+type CredentialNotProven {
+    "Always false; a member needs at least one field."
+    proven: Boolean!
+}
+
+"The Credential was proven, but the Verification policy is REQUIRED and this email is not a Verified email."
+type EmailNotVerified {
+    "So the page can offer to register again, which sends a fresh Verification link."
+    email: String!
+}
+
+type SignInThrottled {
+    retryAfterSeconds: Int!
 }
 
 input RequestRegistrationInput {
@@ -93,6 +137,8 @@ union CompleteEmailVerificationResult = EmailVerified | WrongCredential | Verifi
 
 type EmailVerified {
     email: String!
+    "Where to go now: completing Email verification also signs the person in (ADR 0006)."
+    continueTo: String!
 }
 
 type WrongCredential {

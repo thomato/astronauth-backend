@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.spring.boot.starter.graphql)
     implementation(libs.spring.boot.starter.mail)
     implementation(libs.bouncycastle)
+    implementation(libs.context.propagation)
 
     // Database dependencies
     implementation(libs.flyway.database.postgresql)

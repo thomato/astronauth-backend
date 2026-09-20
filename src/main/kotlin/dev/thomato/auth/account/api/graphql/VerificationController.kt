@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller
 class VerificationController(
     private val lookUpVerificationLink: LookUpVerificationLink,
     private val completeEmailVerification: CompleteEmailVerification,
+    private val savedRequests: SavedRequests,
 ) {
     data class CompleteEmailVerificationInput(
         val token: String,
@@ -27,6 +28,7 @@ class VerificationController(
 
     data class EmailVerified(
         val email: String,
+        val continueTo: String,
     )
 
     data class WrongCredential(
@@ -59,7 +61,8 @@ class VerificationController(
     ): Any =
         when (val result = completeEmailVerification.complete(input.token, input.password, client)) {
             is CompleteEmailVerification.Result.Verified -> {
-                EmailVerified(result.email.asEntered)
+                // Verification signed the person in (ADR 0006), so it answers with a destination too
+                EmailVerified(result.email.asEntered, savedRequests.consume())
             }
 
             is CompleteEmailVerification.Result.WrongCredential -> {

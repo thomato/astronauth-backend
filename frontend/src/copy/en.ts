@@ -53,14 +53,34 @@ export const en = {
       `That’s not the password you registered with. ${
         attemptsLeft === 1 ? '1 attempt left.' : `${attemptsLeft} attempts left.`
       }`,
-    verifiedTitle: 'Your email address is verified',
-    verifiedBody: (email: string) => `${email} is verified. You can close this page.`,
     deadTitle: 'This link no longer works',
     deadBody: 'Links work once and expire after 24 hours. Register again to get a new one.',
     exhaustedTitle: 'Too many wrong passwords',
     exhaustedBody:
       'This link can’t be used anymore. If you don’t remember the password, register again with a new one: you’ll get a new link for it.',
     registerAgain: 'Register again',
+  },
+  signIn: {
+    title: 'Sign in',
+    emailLabel: 'Email address',
+    passwordLabel: 'Password',
+    submit: 'Sign in',
+    submitting: 'Signing in…',
+    // Deliberately says nothing about whether the address has an account (ADR 0003)
+    wrongCredential: 'That email address and password don’t go together.',
+    noAccount: 'No account yet?',
+    register: 'Create one',
+    unverifiedTitle: 'Verify your email address first',
+    unverifiedBody: (email: string) =>
+      `${email} hasn’t been verified yet. Open the link we emailed you, or register again with the same address to get a new one.`,
+    unverifiedAction: 'Send a new link',
+  },
+  account: {
+    title: 'You’re signed in',
+    signedInAs: 'Signed in as',
+    unverified: 'Your email address hasn’t been verified yet.',
+    signOut: 'Sign out',
+    signingOut: 'Signing out…',
   },
   notFound: {
     title: 'Page not found',

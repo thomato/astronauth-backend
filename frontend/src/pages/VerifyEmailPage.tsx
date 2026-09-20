@@ -17,7 +17,6 @@ type State =
       attemptsLeft?: number;
       retryAfter?: number;
     }
-  | { step: 'verified'; email: string }
   | { step: 'exhausted' }
   | { step: 'dead' }
   | { step: 'unavailable'; retryAfter?: number };
@@ -77,7 +76,8 @@ export function VerifyEmailPage() {
       });
       switch (result.__typename) {
         case 'EmailVerified':
-          setState({ step: 'verified', email: result.email });
+          // Verification proved the address and the Credential, so the person is now signed in (ADR 0006)
+          window.location.assign(result.continueTo);
           break;
         case 'WrongCredential':
           setState({ ...form, problem: 'wrongPassword', attemptsLeft: result.attemptsLeft });
@@ -103,12 +103,6 @@ export function VerifyEmailPage() {
           <p role="status" className="text-ink-muted">
             {copy.verifyEmail.checking}
           </p>
-        </Screen>
-      );
-    case 'verified':
-      return (
-        <Screen title={copy.verifyEmail.verifiedTitle}>
-          <Alert tone="success">{copy.verifyEmail.verifiedBody(state.email)}</Alert>
         </Screen>
       );
     case 'exhausted':

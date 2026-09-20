@@ -29,7 +29,8 @@ const editing: Editing = { step: 'form', violations: [], missing: [] };
  */
 export function RegisterPage() {
   const copy = useCopy();
-  const [email, setEmail] = useState('');
+  // Sign-in sends someone here to get a fresh Verification link, with the address they just used
+  const [email, setEmail] = useState(() => new URLSearchParams(window.location.search).get('email') ?? '');
   const [password, setPassword] = useState('');
   const [state, setState] = useState<State>(editing);
 

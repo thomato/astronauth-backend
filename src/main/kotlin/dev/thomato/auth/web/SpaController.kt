@@ -9,12 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping
  */
 @Controller
 class SpaController {
-    @GetMapping(REGISTER, VERIFY_EMAIL)
+    @GetMapping(REGISTER, VERIFY_EMAIL, SIGN_IN, ACCOUNT)
     @Suppress("FunctionOnlyReturningConstant") // the view name is the handler's whole job
     fun page() = "forward:/index.html"
 
     companion object {
         const val REGISTER = "/register"
         const val VERIFY_EMAIL = "/verify-email"
+        const val SIGN_IN = "/sign-in"
+
+        /** The one page that needs a Session; WebSecurityConfiguration is what enforces that. */
+        const val ACCOUNT = "/account"
     }
 }

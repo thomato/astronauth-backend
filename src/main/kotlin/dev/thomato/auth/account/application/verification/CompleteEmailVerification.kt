@@ -95,6 +95,9 @@ class CompleteEmailVerification(
         verificationLinks.invalidateOthers(account.id, link.tokenHash, now)
         // The replaced Credential may have been an attacker's, and so may any session signed in with it
         sessions.endAll(account.id)
+        // Only now: the email address and the Credential have both just been proven, which is more than
+        // Sign-in proves, so this signs the person in (ADR 0006). Starting before endAll would end it too.
+        sessions.start(account.id, now)
         return Result.Verified(account.email)
     }
 }
