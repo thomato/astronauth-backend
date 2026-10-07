@@ -6,6 +6,7 @@ detekt = "1.23.8"
 ktlint = "14.2.0"
 bouncycastle = "1.86"
 archunit = "1.5.0"
+node-gradle = "7.1.0"
 
 [libraries]
 # Spring Boot starters (versions managed by the Spring Boot BOM)
@@ -21,6 +22,9 @@ spring-boot-starter-security-oauth2-resource-server = { module = "org.springfram
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+
+# Carrying thread locals across Spring GraphQL's thread hop (see RequestContextPropagation)
+context-propagation = { module = "io.micrometer:context-propagation" }
 
 # Jackson
 jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
@@ -85,3 +89,4 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+node-gradle = { id = "com.github.node-gradle.node", version.ref = "node-gradle" }

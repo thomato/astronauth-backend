@@ -11,3 +11,5 @@ Following a verification link is not enough: the person must also prove the Cred
 ## Consequences
 
 - Completing Email verification proves both the email address and the Credential, so it can sign the person in; that is deferred to the sign-in slice.
+- An Account can have several Verification links at once, each bound to its own Registration request's Credential, and issuing a new one never revokes older ones: otherwise an attacker could keep re-registering to invalidate the owner's link before it is followed. Completing Email verification invalidates all the others instead.
+- Wrong Credential attempts are counted per Verification link, not per Account, so an attacker holding a link from their own Registration request cannot use up the owner's attempts.

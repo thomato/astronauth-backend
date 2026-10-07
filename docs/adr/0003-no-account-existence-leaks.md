@@ -14,3 +14,4 @@ An authorization server that tells strangers which email addresses have Accounts
 - The listener must run off the request thread; Spring's default synchronous event dispatch would reintroduce the timing leak.
 - The Account does not exist yet when the response is returned.
 - Validation that does not depend on other Accounts (email format, password rules) still fails synchronously.
+- Registration sends at most three emails per email address per hour; beyond that it processes the Registration request silently. The limit must stay invisible in the response and its timing, which is why it lives in the background and not in the request. The per-client limit on Registration requests is visible, because it depends only on the caller.

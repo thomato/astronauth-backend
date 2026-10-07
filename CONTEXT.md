@@ -19,7 +19,7 @@ A person's accepted but not yet processed wish to register with an email address
 _Avoid_: Sign-up, pending registration
 
 **Registration**:
-Processing a Registration request: either creating a new Account with its first Credential, or, when the email address already belongs to an Account, notifying that Account's owner instead.
+Processing a Registration request: creating a new Account and sending a Verification link, or, when the email address already belongs to an Account, notifying that Account's owner instead: with a new Verification link while the email is not yet a Verified email, with a notice once it is.
 _Avoid_: Sign-up, user creation
 
 **Verified email**:
@@ -27,8 +27,26 @@ The fact that a person has proven they control an Account's email address. It is
 _Avoid_: Active, confirmed account
 
 **Email verification**:
-Proving control of an Account's email address by following a single-use link sent to that address and proving the Credential from the Registration request that caused the link to be sent. Completing it makes that Credential the Account's only Credential.
+Proving control of an Account's email address by following a Verification link and proving the Credential it is bound to. Completing it makes that Credential the Account's only Credential and invalidates the Account's other Verification links.
 _Avoid_: Activation, confirmation
+
+**Verification link**:
+A single-use, expiring link sent to an Account's email address for one Registration request and bound to that request's Credential. An Account can have several at once; a new one never revokes older ones.
+_Avoid_: Activation link, confirmation link, verification token
+
+### Signing in
+
+**Sign-in**:
+A person proving a Credential to start a Session. It never reveals whether an Account exists, and what an Account without a Verified email may do is left to the Verification policy.
+_Avoid_: Login, log in, authentication
+
+**Session**:
+A person's proven presence in one browser, started by Sign-in or by completing Email verification, holding the Account it belongs to and the moment its Credential was proven. An Account can have several Sessions at once, one per browser.
+_Avoid_: Login session, token
+
+**Sign-out**:
+Ending the one Session doing the signing out. An Account's other Sessions are left alone; only replacing its Credential ends them all.
+_Avoid_: Logout, log out
 
 ### Operation
 
@@ -37,5 +55,5 @@ Whoever runs an Astronauth deployment and sets its configuration.
 _Avoid_: Admin, administrator
 
 **Verification policy**:
-The Operator's rule for what an Account without a Verified email may do. It is applied when someone signs in, not when an Account is registered, so changing it affects every Account at once.
+The Operator's rule for what an Account without a Verified email may do: under OPTIONAL it may sign in, under REQUIRED it may not. It is applied when someone signs in, not when an Account is registered, so changing it affects every Account at once.
 _Avoid_: Verification mode, activation setting
