@@ -8,10 +8,14 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 
-/** A clock tests can move forward, to see what time does to Verification links and limits. */
+/**
+ * A clock tests can move forward, to see what time does to Verification links and limits.
+ * It ticks in microseconds, the precision the database keeps, so an instant read back equals the one stored.
+ */
 class TestClock(
-    @Volatile private var now: Instant = Instant.now(),
+    @Volatile private var now: Instant = Instant.now().truncatedTo(ChronoUnit.MICROS),
 ) : Clock() {
     override fun instant(): Instant = now
 
