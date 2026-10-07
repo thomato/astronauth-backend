@@ -22,19 +22,41 @@ class SmtpEmailSender(
                 .path("/verify-email")
                 .queryParam("token", token.value)
                 .toUriString()
+        val text =
+            """
+            Open this link to verify your email address:
+
+            $link
+
+            You'll be asked for the password you chose when you registered.
+            The link works once and expires in 24 hours.
+
+            If you didn't register, you can ignore this email.
+            """.trimIndent()
+        send(to, "Verify your email address", text)
+    }
+
+    override fun sendRegistrationNotice(to: EmailAddress) {
+        val text =
+            """
+            Someone tried to register with this email address, but it already belongs to an account.
+
+            If it was you, sign in instead. If it wasn't, you can ignore this email: nothing has changed.
+            """.trimIndent()
+        send(to, "Someone tried to register with your email address", text)
+    }
+
+    private fun send(
+        to: EmailAddress,
+        subject: String,
+        text: String,
+    ) {
         mailSender.send(
             SimpleMailMessage().apply {
                 setFrom(from)
                 setTo(to.asEntered)
-                subject = "Verify your email address"
-                text =
-                    """
-                    Open this link to verify your email address:
-
-                    $link
-
-                    If you didn't register, you can ignore this email.
-                    """.trimIndent()
+                this.subject = subject
+                this.text = text
             },
         )
     }

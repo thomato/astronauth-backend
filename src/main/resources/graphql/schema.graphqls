@@ -1,6 +1,8 @@
 type Query {
     echo(message: String!): EchoResponse!
     ping: PingResponse
+    "Whether a Verification link can still be used, so the page can say so before asking for a password."
+    verificationLink(token: String!): VerificationLinkLookup!
 }
 
 type EchoResponse {
@@ -18,6 +20,7 @@ type PingResponse {
 
 type Mutation {
     requestRegistration(input: RequestRegistrationInput!): RequestRegistrationResult!
+    completeEmailVerification(input: CompleteEmailVerificationInput!): CompleteEmailVerificationResult!
 }
 
 input RequestRegistrationInput {
@@ -25,8 +28,81 @@ input RequestRegistrationInput {
     password: String!
 }
 
-union RequestRegistrationResult = RegistrationRequestAccepted
+"Never reveals whether the email address already belongs to an Account (ADR 0003)."
+union RequestRegistrationResult = RegistrationRequestAccepted | RegistrationRequestRejected | RegistrationRequestThrottled
 
 type RegistrationRequestAccepted {
-    message: String!
+    "The email address as Astronauth understood it."
+    email: String!
+}
+
+type RegistrationRequestRejected {
+    violations: [RegistrationViolation!]!
+}
+
+"The client owns the wording; the server only says which rule was broken."
+type RegistrationViolation {
+    field: RegistrationField!
+    code: RegistrationViolationCode!
+    "The length the rule allows, for the codes that have one."
+    limit: Int
+}
+
+enum RegistrationField {
+    EMAIL
+    PASSWORD
+}
+
+enum RegistrationViolationCode {
+    EMAIL_INVALID
+    EMAIL_TOO_LONG
+    PASSWORD_TOO_SHORT
+    PASSWORD_TOO_LONG
+}
+
+type RegistrationRequestThrottled {
+    retryAfterSeconds: Int!
+}
+
+input CompleteEmailVerificationInput {
+    token: String!
+    "The password from the Registration request that caused the Verification link to be sent (ADR 0006)."
+    password: String!
+}
+
+union VerificationLinkLookup = VerificationLink | VerificationThrottled
+
+type VerificationLink {
+    status: VerificationLinkStatus!
+    "The address the link was sent to; absent when the status is UNKNOWN."
+    email: String
+}
+
+enum VerificationLinkStatus {
+    USABLE
+    EXPIRED
+    USED
+    "Email verification was completed with another link."
+    INVALIDATED
+    "Too many wrong passwords were entered with this link."
+    EXHAUSTED
+    UNKNOWN
+}
+
+union CompleteEmailVerificationResult = EmailVerified | WrongCredential | VerificationLinkUnusable | VerificationThrottled
+
+type EmailVerified {
+    email: String!
+}
+
+type WrongCredential {
+    attemptsLeft: Int!
+}
+
+type VerificationLinkUnusable {
+    status: VerificationLinkStatus!
+}
+
+type VerificationThrottled {
+    retryAfterSeconds: Int!
 }

@@ -26,6 +26,14 @@ repos:
         language: system
         files: \.(kt|kts|java|properties|yaml|yml)$
         pass_filenames: false
+
+      # Frontend lint, formatting, types and component tests; the types come from the GraphQL schema
+      - id: frontend-check
+        name: frontend check
+        entry: ./gradlew frontendLint frontendTest
+        language: system
+        files: ^(frontend/|src/main/resources/graphql/)
+        pass_filenames: false
   # Commit message format
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0

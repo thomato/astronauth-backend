@@ -9,4 +9,7 @@ interface EmailSender {
         to: EmailAddress,
         token: VerificationToken,
     )
+
+    /** Tells the owner of an Account with a Verified email that someone tried to register their address. */
+    fun sendRegistrationNotice(to: EmailAddress)
 }

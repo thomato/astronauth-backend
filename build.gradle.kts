@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.node.gradle)
 }
 
 group = "dev.thomato"
@@ -67,6 +68,64 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// The first-party pages (ADR 0004): built from frontend/ with a Node and pnpm that Gradle downloads itself,
+// so neither a developer's machine nor CI needs them installed
+node {
+    download = true
+    version = "22.23.1"
+    pnpmVersion = "10.18.2"
+    nodeProjectDir = file("frontend")
+}
+
+val frontendSources =
+    fileTree("frontend") {
+        include("src/**", "public/**", "index.html", "package.json", "pnpm-lock.yaml", "*.config.*", "codegen.ts")
+        include("tsconfig*.json", ".prettierrc.json", ".prettierignore")
+        exclude("src/graphql/generated/**")
+    }
+
+val frontendBuild by tasks.registering(com.github.gradle.node.pnpm.task.PnpmTask::class) {
+    description = "Builds the SPA into build/frontend."
+    dependsOn(tasks.pnpmInstall)
+    args = listOf("run", "build")
+    inputs.files(frontendSources)
+    // The frontend's types are generated from the server's schema
+    inputs.dir("src/main/resources/graphql")
+    outputs.dir(layout.buildDirectory.dir("frontend"))
+}
+
+val frontendTest by tasks.registering(com.github.gradle.node.pnpm.task.PnpmTask::class) {
+    description = "Runs the SPA's component tests."
+    dependsOn(tasks.pnpmInstall)
+    args = listOf("run", "test")
+    inputs.files(frontendSources)
+    inputs.dir("src/main/resources/graphql")
+}
+
+val frontendLint by tasks.registering(com.github.gradle.node.pnpm.task.PnpmTask::class) {
+    description = "Lints, formats and type-checks the SPA."
+    dependsOn(tasks.pnpmInstall)
+    args = listOf("run", "lint")
+    inputs.files(frontendSources)
+}
+
+tasks.processResources {
+    from(frontendBuild) { into("static") }
+}
+
+tasks.test {
+    dependsOn(frontendTest)
+}
+
+tasks.check {
+    dependsOn(frontendLint)
+}
+
+// Development: the dev profile turns on GraphiQL
+tasks.bootRun {
+    systemProperty("spring.profiles.active", "dev")
 }
 
 // KtLint configuration

@@ -17,4 +17,9 @@ class SpringPasswordHasher : PasswordHasher {
         )
 
     override fun hash(password: Password) = PasswordHash(checkNotNull(encoder.encode(password.plaintext)))
+
+    override fun matches(
+        password: Password,
+        hash: PasswordHash,
+    ) = encoder.matches(password.plaintext, hash.value)
 }
